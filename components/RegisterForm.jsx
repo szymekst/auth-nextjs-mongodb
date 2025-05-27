@@ -8,7 +8,6 @@ const RegisterForm = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
-    const router = useRouter();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -35,7 +34,7 @@ const RegisterForm = () => {
                 const form = e.target;
                 form.reset();
                 setError("");
-                router.push("/");
+                // TODO Po zarejestrowaniu wyświetl info, że konto zostało zarejestrowane, sprawdź mail aby aktywować konto.
             } else {
                 const data = await res.json();
                 setError(data.message);
