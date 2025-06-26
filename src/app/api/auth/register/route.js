@@ -1,7 +1,7 @@
 import bcrypt from "bcryptjs";
 import crypto from "crypto";
 import { Resend } from "resend";
-import { connectMongoDB } from "@/src/lib/mongodb";
+import { connectMongoDB } from "@/lib/mongodb";
 import { NextResponse } from "next/server";
 
 import User from "@/src/models/users";
@@ -63,9 +63,9 @@ export async function POST(req) {
         await resend.emails.send({
             from: "NoReply <noreply@noreply.pl>",
             to: email,
-            subject: "Potwierdź swoje konto!",
+            subject: "Verify Email!",
             html: `
-                    <p>Kliknij poniższy link, aby aktywować konto:</p>
+                    <p>Click to verify:</p>
                     <a href="${process.env.NEXTAUTH_URL}/verify-email?token=${token}">
                     <button style="padding:10px 20px; background:#0070f3; color:white;">Potwierdź konto</button>
                     </a>
