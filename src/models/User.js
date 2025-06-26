@@ -7,7 +7,6 @@ const userSchema = new Schema(
         password: { type: String, required: true },
         role: { type: String, default: "user" },
         isActive: { type: Boolean, default: false },
-        emailVerificationToken: { type: String },
     },
     { timestamps: true }
 );
