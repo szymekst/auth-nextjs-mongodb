@@ -1,19 +1,17 @@
-# 🔐 Auth App – Next.js + NextAuth + MongoDB
+# Auth App – Next.js + NextAuth + MongoDB
 
 A demo user authentication system built with Next.js, MongoDB, NextAuth, and React Hook Form with Zod for form validation.
 
 > Demonstration project – created to showcase my skills
 
----
-
-## 🧰 Requirements
+## Requirements
 
 - Node.js version `18.x` or higher
 - MongoDB (e.g., MongoDB Atlas)
 
 ---
 
-## ⚙️ Local Installation
+## Local Installation
 
 1. **Clone the repository**
 
@@ -30,11 +28,16 @@ A demo user authentication system built with Next.js, MongoDB, NextAuth, and Rea
 
 3. **Create a `.env.local` file and fill in environment variables**
 
-    ```
-    MONGODB_URI=YOUR_MONGODB_CONNECTION_URI
-    NEXTAUTH_SECRET=RANDOM_STRING_AS_SECRET
-    NEXTAUTH_URL=http://localhost:3000/
-    RESEND_API_KEY=RESEND_API_KEY
+    ```env
+    MONGODB_URI=your_mongodb_connection_uri_here    # e.g. mongodb+srv://user:password@cluster0.mongodb.net/mydb
+    NEXTAUTH_SECRET=your_random_secret_here         # e.g. supersecretstringthatshouldberandomandsecure
+    NEXTAUTH_URL=http://localhost:3000/             # e.g. http://localhost:3000/
+    YOUR_DOMAIN=yourdomain.com                      # e.g. example.pl
+    EMAIL_FROM=YourDisplayName                      # e.g. MySuperDomain
+    SMTP_HOST=your_smtp_host                        # e.g. smtp.ovh.net
+    SMTP_PORT=your_smtp_port                        # e.g. 587
+    SMTP_USER=your_smtp_user                        # e.g. user@example.pl
+    SMTP_PASS=your_smtp_password                    # e.g. supersecretpassword
     ```
 
     🔑 You can generate `NEXTAUTH_SECRET` using the command:
