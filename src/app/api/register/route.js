@@ -1,9 +1,9 @@
 import bcrypt from "bcryptjs";
 import crypto from "crypto";
 import { Resend } from "resend";
-import { connectMongoDB } from "@/lib/mongodb";
+import { connectMongoDB } from "@/src/lib/mongodb";
 import { NextResponse } from "next/server";
-import User from "@/models/users";
+import User from "@/src/models/users";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
