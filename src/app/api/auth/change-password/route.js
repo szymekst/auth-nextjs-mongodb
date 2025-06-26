@@ -1,9 +1,10 @@
 import { connectMongoDB } from "@/lib/mongodb";
-import bcrypt from "bcryptjs";
-import User from "@/models/User";
-import Token from "@/models/Token";
 import { NextResponse } from "next/server";
 import { ChangePasswordSchema } from "@/utils/zodSchemas";
+import bcrypt from "bcryptjs";
+
+import User from "@/models/User";
+import Token from "@/models/Token";
 
 export async function POST(req) {
     try {
