@@ -95,7 +95,7 @@ const LoginForm = () => {
                             placeholder="Enter your password"
                         />
                         <Link
-                            href={"/forgot-password"}
+                            href={"/request-password"}
                             className="self-end text-right"
                         >
                             Forgot password?

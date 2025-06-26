@@ -34,7 +34,7 @@ const VerifyEmailForm = () => {
 
     return (
         <div className="container mx-auto flex min-h-dvh max-w-[400px] items-center px-5 py-8">
-            {status === "success" ? (
+            {success === "success" ? (
                 <div className="flex flex-1 flex-col items-center justify-center gap-2">
                     <IconContext.Provider value={{ className: "text-green" }}>
                         <FaRegCheckCircle size={50} />
@@ -45,7 +45,7 @@ const VerifyEmailForm = () => {
                     <p className="text-center text-sm">
                         Now you can login to your account!
                     </p>
-                    <AuthButton content="Go to log in" href="login" />
+                    <AuthButton content="Go to log in" href="/" />
                 </div>
             ) : (
                 <div className="flex flex-1 flex-col">

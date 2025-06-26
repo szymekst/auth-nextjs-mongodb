@@ -43,7 +43,7 @@ export async function POST(req) {
         });
 
         await resend.emails.send({
-            from: "NoReply <noreply@noreply.pl>",
+            from: `No Reply <noreply@${process.env.RESEND_YOUR_DOMAIN}>`,
             to: email,
             subject: "Request to change password",
             html: `
