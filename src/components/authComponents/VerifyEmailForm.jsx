@@ -34,7 +34,7 @@ const VerifyEmailForm = () => {
 
     return (
         <div className="container mx-auto flex min-h-dvh max-w-[400px] items-center px-5 py-8">
-            {success === "success" ? (
+            {status === "success" ? (
                 <div className="flex flex-1 flex-col items-center justify-center gap-2">
                     <IconContext.Provider value={{ className: "text-green" }}>
                         <FaRegCheckCircle size={50} />

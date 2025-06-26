@@ -1,14 +1,14 @@
 import bcrypt from "bcryptjs";
 import crypto from "crypto";
-import { Resend } from "resend";
 import { connectMongoDB } from "@/lib/mongodb";
 import { NextResponse } from "next/server";
 import { RegisterSchema } from "@/utils/zodSchemas";
 
+import { sendEmail } from "@/lib/sendEmail";
+import VerifyAcountEmail from "@/emails/verifyAccountEmail";
+
 import User from "@/models/User";
 import Token from "@/models/Token";
-
-const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function POST(req) {
     try {
@@ -61,16 +61,10 @@ export async function POST(req) {
             type: "emailVerification",
         });
 
-        await resend.emails.send({
-            from: `No Reply <noreply@${process.env.RESEND_YOUR_DOMAIN}>`,
+        await sendEmail({
             to: newUser.email,
-            subject: "Verify Email!",
-            html: `
-                    <p>Click to verify:</p>
-                    <a href="${process.env.NEXTAUTH_URL}/verify-email?token=${token}">
-                    <button style="padding:10px 20px; background:#0070f3; color:white;">Potwierdź konto</button>
-                    </a>
-                    `,
+            subject: `${process.env.EMAIL_FROM} - Verify your account!`,
+            emailToHtml: <VerifyAcountEmail userName={name} token={token} />,
         });
 
         return NextResponse.json(

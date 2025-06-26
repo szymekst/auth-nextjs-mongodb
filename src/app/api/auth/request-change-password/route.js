@@ -1,13 +1,13 @@
 import { connectMongoDB } from "@/lib/mongodb";
 import { NextResponse } from "next/server";
 import { ForgotPasswordSchema } from "@/utils/zodSchemas";
-import { Resend } from "resend";
 import crypto from "crypto";
+
+import { sendEmail } from "@/lib/sendEmail";
+import ChangePasswordEmail from "@/emails/changePasswordEmail";
 
 import User from "@/models/User";
 import Token from "@/models/Token";
-
-const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function POST(req) {
     try {
@@ -42,16 +42,12 @@ export async function POST(req) {
             type: "passwordReset",
         });
 
-        await resend.emails.send({
-            from: `No Reply <noreply@${process.env.RESEND_YOUR_DOMAIN}>`,
-            to: email,
-            subject: "Request to change password",
-            html: `
-                    <p>Click link to change password:</p>
-                    <a href="${process.env.NEXTAUTH_URL}/change-password?token=${token}">
-                    <button style="padding:10px 20px; background:#0070f3; color:white;">Potwierdź konto</button>
-                    </a>
-                    `,
+        await sendEmail({
+            to: user.email,
+            subject: `${process.env.EMAIL_FROM} - Request to change password`,
+            emailToHtml: (
+                <ChangePasswordEmail userName={user.name} token={token} />
+            ),
         });
 
         return NextResponse.json({
