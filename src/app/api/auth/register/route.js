@@ -3,8 +3,9 @@ import crypto from "crypto";
 import { Resend } from "resend";
 import { connectMongoDB } from "@/lib/mongodb";
 import { NextResponse } from "next/server";
+import { RegisterSchema } from "@/utils/zodSchemas";
 
-import User from "@/src/models/users";
+import User from "@/models/User";
 import Token from "@/models/Token";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
@@ -61,8 +62,8 @@ export async function POST(req) {
         });
 
         await resend.emails.send({
-            from: "NoReply <noreply@noreply.pl>",
-            to: email,
+            from: `No Reply <noreply@${process.env.RESEND_YOUR_DOMAIN}>`,
+            to: newUser.email,
             subject: "Verify Email!",
             html: `
                     <p>Click to verify:</p>
