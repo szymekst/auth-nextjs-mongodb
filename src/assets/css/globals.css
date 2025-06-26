@@ -1,7 +1,52 @@
 @import "tailwindcss";
 
+/* To  customize theme */
+@theme {
+    --breakpoint-*: initial;
+    --breakpoint-sm: 48rem;
+    --breakpoint-md: 64rem;
+    --breakpoint-lg: 75rem;
+
+    --color-*: initial;
+    --color-black: #212529;
+    --color-white: #ffffff;
+    --color-green: #46a56c;
+    --color-gray: oklch(55.1% 0.027 264.364);
+    --color-gray-100: #d8dadc;
+    --color-red: oklch(63.7% 0.237 25.331);
+    --color-blue: oklch(62.3% 0.214 259.815);
+
+    --color-app-header: #070b1d;
+}
+
 @layer base {
-    input {
-        @apply w-[400px] border border-gray-200 py-2 px-6 bg-zinc-100/40;
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+        font-family: var(--font-poppins);
+        font-weight: bold;
+        line-height: 130%;
+    }
+
+    body {
+        font-family: var(--font-inter);
+        line-height: 125%;
+    }
+}
+
+@layer components {
+    .auth-label {
+        @apply flex flex-col gap-1.5;
+    }
+
+    .auth-label label {
+        @apply text-sm;
+    }
+
+    .auth-input {
+        @apply focus-visible:outline-green relative w-full rounded-[10px] border-[1px] border-[#D8DADC] py-[18px] pl-[18px] pr-[46px] focus-visible:!placeholder-transparent;
     }
 }
