@@ -1,86 +1,203 @@
 "use client";
-import React, { useState } from "react";
+import React, { useRef, useEffect } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { RegisterSchema } from "@/utils/zodSchemas";
+
+import { CiMail } from "react-icons/ci";
+import SpinnerIcon from "@/assets/svg/SpinnerIcon.svg";
+import AuthButton from "../authComponents/AuthButton";
+import ReturnButton from "./ReturnButton";
 
 const RegisterForm = () => {
-    const [name, setName] = useState("");
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
-    const [error, setError] = useState("");
+    const {
+        register,
+        handleSubmit,
+        setError,
+        watch,
+        formState: { errors, isSubmitting, isSubmitSuccessful },
+    } = useForm({
+        resolver: zodResolver(RegisterSchema),
+        shouldFocusError: false,
+    });
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
+    const rootErrorRef = useRef(null);
 
-        if (!name || !email || !password) {
-            setError("All fields are necessary!");
-            return;
+    const name = watch("name");
+    const email = watch("email") || "example@gmail.com";
+    const password = watch("password");
+    const confirmPassword = watch("confirmPassword");
+
+    const isDisabled = !name || !email || !password || !confirmPassword;
+
+    useEffect(() => {
+        if (errors.root) {
+            rootErrorRef.current?.scrollIntoView({ behavior: "smooth" });
         }
+    }, [errors.root]);
 
+    const onSubmit = async (data) => {
         try {
-            const res = await fetch("api/register", {
+            const res = await fetch("/api/auth/signup", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
-                    name,
-                    email,
-                    password,
+                    name: data.name,
+                    email: data.email,
+                    password: data.password,
+                    confirmPassword: data.confirmPassword,
                 }),
             });
 
-            if (res.ok) {
-                const form = e.target;
-                form.reset();
-                setError("");
-                // TODO Po zarejestrowaniu wyświetl info, że konto zostało zarejestrowane, sprawdź mail aby aktywować konto.
-            } else {
-                const data = await res.json();
-                setError(data.message);
+            if (!res.ok) {
+                const json = await res.json();
+
+                if (typeof json.message === "object") {
+                    const fieldErrors = json.message;
+                    Object.entries(fieldErrors).forEach(([field, messages]) => {
+                        setError(field, {
+                            type: "server",
+                            message: messages[0],
+                        });
+                    });
+                } else {
+                    setError("root", {
+                        type: "server",
+                        message: json.message || "Something went wrong!",
+                    });
+                }
             }
         } catch (error) {
-            console.log("Error during registration: ", error);
+            setError("root", {
+                type: "manual",
+                message:
+                    "Failed to connect to API. <br /> Contact the site administrator!",
+            });
         }
     };
 
     return (
-        <div className="grid place-items-center h-screen">
-            <div className="shadow-lg p-5 rounded-lg border-t-4 border-green-400">
-                <h1 className="text-xl font-bold my-4">Register</h1>
+        <div className="container mx-auto flex min-h-dvh max-w-[400px] items-center px-5 py-12">
+            {isSubmitSuccessful ? (
+                <div className="flex flex-1 flex-col items-center justify-center gap-2">
+                    <CiMail size={50} />
+                    <h1 className="text-3xl text-black/90">Almost finished!</h1>
+                    <p className="text-center text-sm">
+                        We sent an email with a verification link. <br /> Check{" "}
+                        {email} to complete registration!
+                    </p>
 
-                <form className="flex flex-col gap-3" onSubmit={handleSubmit}>
-                    <input
-                        type="text"
-                        placeholder="Full Name"
-                        onChange={(e) => setName(e.target.value)}
-                    />
-                    <input
-                        type="text"
-                        placeholder="E-mail"
-                        onChange={(e) => setEmail(e.target.value)}
-                    />
-                    <input
-                        type="password"
-                        placeholder="Password"
-                        onChange={(e) => setPassword(e.target.value)}
-                    />
-                    <button className="bg-green-600 text-white font-bold cursor-pointer px-6 py-2">
-                        Register
-                    </button>
-
-                    {error && (
-                        <div className="bg-red-500 text-white w-fit text-sm py-1 px-3 rounded-md mt-2">
-                            {error}
+                    <AuthButton content="Go to log in" href="/" />
+                </div>
+            ) : (
+                <div className="flex flex-1 flex-col">
+                    <ReturnButton />
+                    <h1 className="mb-9 text-3xl text-black/90">Sign Up</h1>
+                    <form
+                        className="mb-9 flex flex-col gap-[22px]"
+                        onSubmit={handleSubmit(onSubmit)}
+                    >
+                        <div className="auth-label">
+                            <label htmlFor="name">Name</label>
+                            <input
+                                className={`auth-input ${errors.name ? "border-red placeholder-red" : ""}`}
+                                {...register("name")}
+                                id="name"
+                                type="text"
+                                placeholder="Enter your name"
+                            />
+                            {errors.name && (
+                                <p className="text-red text-sm">
+                                    {errors.name.message}
+                                </p>
+                            )}
                         </div>
-                    )}
 
-                    <Link className="text-sm mt-3 text-right" href={"/"}>
+                        <div className="auth-label">
+                            <label htmlFor="email" className="text-sm">
+                                E-Mail
+                            </label>
+                            <input
+                                className={`auth-input ${errors.email ? "border-red placeholder-red" : ""}`}
+                                {...register("email")}
+                                id="email"
+                                type="text"
+                                placeholder="Enter your email address"
+                            />
+                            {errors.email && (
+                                <p className="text-red text-sm">
+                                    {errors.email.message}
+                                </p>
+                            )}
+                        </div>
+
+                        <div className="auth-label">
+                            <label htmlFor="password">Create a password</label>
+                            <input
+                                className={`auth-input ${errors.password ? "border-red placeholder-red" : ""}`}
+                                {...register("password")}
+                                id="password"
+                                type="password"
+                                placeholder="Enter your password"
+                            />
+                            {errors.password && (
+                                <p className="text-red text-sm">
+                                    {errors.password.message}
+                                </p>
+                            )}
+                        </div>
+
+                        <div className="auth-label">
+                            <label htmlFor="confirmPassword">
+                                Confirm password
+                            </label>
+                            <input
+                                className={`auth-input ${errors.confirmPassword ? "border-red placeholder-red" : ""}`}
+                                {...register("confirmPassword")}
+                                id="confirmPassword"
+                                type="password"
+                                placeholder="Confirm your password"
+                            />
+                            {errors.confirmPassword && (
+                                <p className="text-red text-sm">
+                                    {errors.confirmPassword.message}
+                                </p>
+                            )}
+                        </div>
+
+                        {isSubmitting ? (
+                            <div className="bg-green mt-4 cursor-not-allowed rounded-[10px] py-[12px] text-center font-semibold text-white">
+                                <SpinnerIcon className="fill-gray inline h-8 w-8 animate-spin text-white" />
+                            </div>
+                        ) : (
+                            <AuthButton
+                                content={"Register"}
+                                isDisabled={isDisabled}
+                            />
+                        )}
+                    </form>
+                    <Link className="mb-9 text-center text-sm" href={"/"}>
                         Already have an account?{" "}
-                        <span className="underline">Login</span>
+                        <span className="text-green hover:text-green/90 font-semibold transition-all">
+                            Log in
+                        </span>
                     </Link>
-                </form>
-            </div>
+
+                    {errors.root && (
+                        <div
+                            ref={rootErrorRef}
+                            className="bg-red rounded-[10px] p-2 text-center text-sm text-white"
+                            dangerouslySetInnerHTML={{
+                                __html: errors.root.message,
+                            }}
+                        ></div>
+                    )}
+                </div>
+            )}
         </div>
     );
 };

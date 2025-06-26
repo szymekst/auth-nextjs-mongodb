@@ -114,7 +114,7 @@ const LoginForm = () => {
                         <AuthButton content="Login" isDisabled={isDisabled} />
                     )}
                 </form>
-                <Link className="mb-9 text-center text-sm" href={"/signup"}>
+                <Link className="mb-9 text-center text-sm" href={"/register"}>
                     Don't have an account?{" "}
                     <span className="text-green hover:text-green/90 font-semibold transition-all">
                         Sign up
