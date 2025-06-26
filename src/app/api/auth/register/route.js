@@ -61,9 +61,9 @@ export async function POST(req) {
         });
 
         await resend.emails.send({
-            from: "Pettie <noreply@pettie.pl>",
+            from: "NoReply <noreply@noreply.pl>",
             to: email,
-            subject: "Pettie - Potwierdź swoje konto!",
+            subject: "Potwierdź swoje konto!",
             html: `
                     <p>Kliknij poniższy link, aby aktywować konto:</p>
                     <a href="${process.env.NEXTAUTH_URL}/verify-email?token=${token}">
