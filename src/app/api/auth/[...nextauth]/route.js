@@ -3,6 +3,7 @@ import User from "@/src/models/users";
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
+import { LoginSchema } from "@/utils/zodSchemas";
 
 export const authOptions = {
     providers: [
@@ -14,15 +15,22 @@ export const authOptions = {
                 const { email, password } = credentials;
 
                 try {
+                    const parsed = LoginSchema.safeParse(credentials);
+                    if (!parsed.success) {
+                        throw new Error("Data validation failed");
+                    }
+
                     await connectMongoDB();
                     const user = await User.findOne({ email });
 
                     if (!user) {
-                        return null;
+                        throw new Error("Account does not exist");
                     }
 
                     if (!user.isActive) {
-                        return null;
+                        throw new Error(
+                            "Account is not active. <br /> Sign up again to send a new verification email!"
+                        );
                     }
 
                     const passwordsMatch = await bcrypt.compare(
@@ -31,12 +39,13 @@ export const authOptions = {
                     );
 
                     if (!passwordsMatch) {
-                        return null;
+                        throw new Error("Incorrect password");
                     }
 
                     return user;
                 } catch (error) {
-                    console.log("Error: ", error);
+                    console.error("Error: ", error);
+                    throw new Error(error.message);
                 }
             },
         }),
