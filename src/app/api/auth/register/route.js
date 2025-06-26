@@ -66,7 +66,7 @@ export async function POST(req) {
             subject: "Pettie - Potwierdź swoje konto!",
             html: `
                     <p>Kliknij poniższy link, aby aktywować konto:</p>
-                    <a href="${process.env.NEXTAUTH_URL}/verify?token=${token}">
+                    <a href="${process.env.NEXTAUTH_URL}/verify-email?token=${token}">
                     <button style="padding:10px 20px; background:#0070f3; color:white;">Potwierdź konto</button>
                     </a>
                     `,
