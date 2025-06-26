@@ -1,71 +1,134 @@
 "use client";
-import React, { useState } from "react";
+import React, { useRef, useEffect } from "react";
 import Link from "next/link";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { LoginSchema } from "@/utils/zodSchemas";
+import SpinnerIcon from "@/assets/svg/SpinnerIcon.svg";
+import AuthButton from "../authComponents/AuthButton";
+import ReturnButton from "./ReturnButton";
 
 const LoginForm = () => {
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
-    const [error, setError] = useState("");
-
     const router = useRouter();
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
+    const {
+        register,
+        handleSubmit,
+        setError,
+        watch,
+        formState: { errors, isSubmitting },
+    } = useForm({ resolver: zodResolver(LoginSchema) });
 
+    const rootErrorRef = useRef(null);
+
+    const email = watch("email");
+    const password = watch("password");
+
+    const isDisabled = !email || !password;
+
+    useEffect(() => {
+        if (errors.root) {
+            rootErrorRef.current?.scrollIntoView({ behavior: "smooth" });
+        }
+    }, [errors.root]);
+    const onSubmit = async (data) => {
         try {
             const res = await signIn("credentials", {
-                email,
-                password,
+                email: data.email,
+                password: data.password,
                 redirect: false,
             });
 
             if (res.error) {
-                setError("Invalid Credentials");
+                setError("root", {
+                    type: "manual",
+                    message: res.error || "Invalid Credentials!",
+                });
                 return;
             }
 
-            router.replace("dashboard");
+            router.push("/dashboard");
         } catch (error) {
-            console.log(error);
+            setError("root", {
+                type: "manual",
+                message:
+                    res.error ||
+                    "Something went wrong! <br /> Contact the site administrator!",
+            });
+            return;
         }
     };
 
     return (
-        <div className="grid place-items-center h-screen">
-            <div className="shadow-lg p-5 rounded-lg border-t-4 border-green-400">
-                <h1 className="text-xl font-bold my-4">Enter the details</h1>
-
-                <form className="flex flex-col gap-3" onSubmit={handleSubmit}>
-                    <input
-                        type="text"
-                        placeholder="E-mail"
-                        onChange={(e) => setEmail(e.target.value)}
-                    />
-                    <input
-                        type="password"
-                        placeholder="Password"
-                        onChange={(e) => setPassword(e.target.value)}
-                    />
-                    <button className="bg-green-600 text-white font-bold cursor-pointer px-6 py-2">
-                        Login
-                    </button>
-
-                    {error && (
-                        <div className="bg-red-500 text-white w-fit text-sm py-1 px-3 rounded-md mt-2">
-                            {error}
+        <div className="container mx-auto flex min-h-dvh max-w-[400px] items-center px-5 py-8">
+            <div className="flex flex-1 flex-col">
+                <ReturnButton />
+                <h1 className="mb-9 text-3xl text-black/90">Log in</h1>
+                <form
+                    className="mb-9 flex flex-col gap-[22px]"
+                    onSubmit={handleSubmit(onSubmit)}
+                >
+                    <div className="auth-label">
+                        <label htmlFor="email">E-Mail</label>
+                        <input
+                            {...register("email")}
+                            id="email"
+                            type="text"
+                            placeholder="Enter your email address"
+                            className="auth-input"
+                        />
+                        {errors.email && (
+                            <p className="text-red text-sm">
+                                {errors.email.message}
+                            </p>
+                        )}
+                    </div>
+                    <div className="auth-label">
+                        <label htmlFor="password">Password</label>
+                        <input
+                            {...register("password")}
+                            id="password"
+                            type="password"
+                            className="auth-input"
+                            placeholder="Enter your password"
+                        />
+                        <Link
+                            href={"/forgot-password"}
+                            className="self-end text-right"
+                        >
+                            Forgot password?
+                        </Link>
+                        {errors.password && (
+                            <p className="text-red text-sm">
+                                {errors.password.message}
+                            </p>
+                        )}
+                    </div>
+                    {isSubmitting ? (
+                        <div className="bg-green mt-4 cursor-not-allowed rounded-[10px] py-[12px] text-center font-semibold text-white">
+                            <SpinnerIcon className="fill-gray inline h-8 w-8 animate-spin text-white" />
                         </div>
+                    ) : (
+                        <AuthButton content="Login" isDisabled={isDisabled} />
                     )}
-
-                    <Link
-                        className="text-sm mt-3 text-right"
-                        href={"/register"}
-                    >
-                        Don't have an account?{" "}
-                        <span className="underline">Register</span>
-                    </Link>
                 </form>
+                <Link className="mb-9 text-center text-sm" href={"/signup"}>
+                    Don't have an account?{" "}
+                    <span className="text-green hover:text-green/90 font-semibold transition-all">
+                        Sign up
+                    </span>
+                </Link>
+                {errors.root && (
+                    <div
+                        ref={rootErrorRef}
+                        className="bg-red rounded-[10px] p-2 text-center text-sm text-white"
+                        dangerouslySetInnerHTML={{
+                            __html: errors.root.message,
+                        }}
+                    ></div>
+                )}
             </div>
         </div>
     );
