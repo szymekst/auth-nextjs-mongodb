@@ -2,8 +2,8 @@
 import React, { useRef, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useSearchParams, useRouter } from "next/navigation";
-import { ChangePasswordSchema } from "@/utils/zodSchemas";
+import { useSearchParams } from "next/navigation";
+import { ChangePasswordSchema, ChangePasswordData } from "@/utils/zodSchemas";
 import Link from "next/link";
 import ReturnButton from "@/components/authComponents/ReturnButton";
 import AuthButton from "@/components/authComponents/AuthButton";
@@ -20,19 +20,19 @@ const ChangePasswordForm = () => {
         setError,
         watch,
         formState: { errors, isSubmitting, isSubmitSuccessful },
-    } = useForm({
+    } = useForm<ChangePasswordData>({
         resolver: zodResolver(ChangePasswordSchema),
         shouldFocusError: false,
     });
 
-    const rootErrorRef = useRef(null);
+    const rootErrorRef = useRef<HTMLDivElement | null>(null);
 
     const password = watch("password");
     const confirmPassword = watch("confirmPassword");
 
     const isDisabled = !password || !confirmPassword;
 
-    const onSubmit = async (data) => {
+    const onSubmit = async (data: ChangePasswordData) => {
         try {
             const res = await fetch("/api/auth/change-password", {
                 method: "POST",
@@ -53,11 +53,11 @@ const ChangePasswordForm = () => {
                     message: json.message || "Something went wrong!",
                 });
             }
-        } catch (error) {
+        } catch (error: any) {
             setError("root", {
                 type: "manual",
                 message:
-                    res.error ||
+                    error?.message ||
                     "Failed to connect to API. <br /> Contact the site administrator!",
             });
             return;
@@ -156,7 +156,7 @@ const ChangePasswordForm = () => {
                             ref={rootErrorRef}
                             className="bg-red rounded-[10px] p-2 text-center text-sm text-white"
                             dangerouslySetInnerHTML={{
-                                __html: errors.root.message,
+                                __html: errors.root?.message || "",
                             }}
                         ></div>
                     )}

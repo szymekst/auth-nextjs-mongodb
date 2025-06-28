@@ -74,3 +74,5 @@ export {
     ForgotPasswordSchema,
     ChangePasswordSchema,
 };
+
+export type ChangePasswordData = z.infer<typeof ChangePasswordSchema>;

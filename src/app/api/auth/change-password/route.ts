@@ -1,12 +1,12 @@
 import { connectMongoDB } from "@/lib/mongodb";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { ChangePasswordSchema } from "@/utils/zodSchemas";
 import bcrypt from "bcryptjs";
 
 import User from "@/models/User";
 import Token from "@/models/Token";
 
-export async function POST(req) {
+export async function POST(req: NextRequest) {
     try {
         const { token, password, confirmPassword } = await req.json();
 

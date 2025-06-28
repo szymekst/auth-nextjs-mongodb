@@ -1,7 +1,19 @@
 import React from "react";
 import Link from "next/link";
 
-const AuthButton = ({ content, href = "", isDisabled = false, onClick }) => {
+type AuthButtonProps = {
+    content: string;
+    href?: string;
+    isDisabled?: boolean;
+    onClick?: React.MouseEventHandler<HTMLButtonElement>;
+};
+
+const AuthButton: React.FC<AuthButtonProps> = ({
+    content,
+    href = "",
+    isDisabled = false,
+    onClick,
+}) => {
     const btnClasses =
         "w-full text-center bg-green enabled:hover:bg-green/90 mt-4 cursor-pointer rounded-[10px] py-[18px] font-semibold text-white transition-all disabled:cursor-not-allowed disabled:brightness-90";
 
