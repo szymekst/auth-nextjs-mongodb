@@ -4,11 +4,11 @@ import Link from "next/link";
 
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { RegisterSchema } from "@/utils/zodSchemas";
+import { RegisterSchema, RegisterData } from "@/utils/zodSchemas";
 
 import { CiMail } from "react-icons/ci";
 import SpinnerIcon from "@/assets/svg/SpinnerIcon.svg";
-import AuthButton from "../authComponents/AuthButton";
+import AuthButton from "./AuthButton";
 import ReturnButton from "./ReturnButton";
 
 const RegisterForm = () => {
@@ -18,12 +18,12 @@ const RegisterForm = () => {
         setError,
         watch,
         formState: { errors, isSubmitting, isSubmitSuccessful },
-    } = useForm({
+    } = useForm<RegisterData>({
         resolver: zodResolver(RegisterSchema),
         shouldFocusError: false,
     });
 
-    const rootErrorRef = useRef(null);
+    const rootErrorRef = useRef<HTMLDivElement | null>(null);
 
     const name = watch("name");
     const email = watch("email") || "example@gmail.com";
@@ -38,7 +38,7 @@ const RegisterForm = () => {
         }
     }, [errors.root]);
 
-    const onSubmit = async (data) => {
+    const onSubmit = async (data: RegisterData) => {
         try {
             const res = await fetch("/api/auth/register", {
                 method: "POST",
@@ -59,9 +59,9 @@ const RegisterForm = () => {
                 if (typeof json.message === "object") {
                     const fieldErrors = json.message;
                     Object.entries(fieldErrors).forEach(([field, messages]) => {
-                        setError(field, {
+                        setError(field as keyof RegisterData, {
                             type: "server",
-                            message: messages[0],
+                            message: (messages as string[])[0],
                         });
                     });
                 } else {
@@ -192,7 +192,7 @@ const RegisterForm = () => {
                             ref={rootErrorRef}
                             className="bg-red rounded-[10px] p-2 text-center text-sm text-white"
                             dangerouslySetInnerHTML={{
-                                __html: errors.root.message,
+                                __html: errors.root?.message || "",
                             }}
                         ></div>
                     )}
