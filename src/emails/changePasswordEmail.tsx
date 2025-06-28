@@ -9,30 +9,37 @@ import {
     Section,
     Text,
 } from "@react-email/components";
+import { defaultEmailProps } from "@/types/emailTypes";
 
-export const VerifyAcountEmail = ({ userName, token }) => {
-    const verifyUrl = `${process.env.NEXTAUTH_URL}/verify-email?token=${token}`;
+export const ChangePasswordEmail = ({ userName, token }: defaultEmailProps) => {
+    const verifyUrl = `${process.env.NEXTAUTH_URL}/change-password?token=${token}`;
     return (
         <Html lang="en">
             <Head />
             <Body style={main}>
-                <Preview>Pettie - Verify your account!</Preview>
+                <Preview>Pettie - Request to change password</Preview>
                 <Container style={container}>
                     <Heading as="h1">Pettie</Heading>
                     <Section>
                         <Text style={text}>Hi {userName},</Text>
                         <Text style={text}>
-                            You are still a few clicks away from your account!{" "}
-                            <br />
-                            To complete your registration, click the button
-                            below:
+                            It looks like you want to change your password.{" "}
+                            <br /> You can set a new password here:
                         </Text>
                         <Button style={button} href={verifyUrl}>
-                            Verify
+                            Reset password
                         </Button>
                         <Text style={text}>
-                            If you're not the one trying to register, just
-                            ignore and delete this message.
+                            The link will only be active for 30 minutes.
+                        </Text>
+                        <Text style={text}>
+                            If you don&#39;t want to change your password or
+                            didn&#39;t request this, just ignore and delete this
+                            message.
+                        </Text>
+                        <Text style={text}>
+                            Do not forward this email to anyone for security
+                            reasons!
                         </Text>
                         <Text style={text}>Thank you for your trust!</Text>
                     </Section>
@@ -42,7 +49,7 @@ export const VerifyAcountEmail = ({ userName, token }) => {
     );
 };
 
-export default VerifyAcountEmail;
+export default ChangePasswordEmail;
 
 const main = {
     backgroundColor: "#f6f9fc",
@@ -64,7 +71,7 @@ const text = {
     lineHeight: "26px",
 };
 
-const button = {
+const button: React.CSSProperties = {
     backgroundColor: "#46a56c",
     borderRadius: "4px",
     color: "#fff",
