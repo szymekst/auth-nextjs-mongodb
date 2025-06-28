@@ -5,9 +5,9 @@ import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { LoginSchema } from "@/utils/zodSchemas";
+import { LoginSchema, LoginData } from "@/utils/zodSchemas";
 import SpinnerIcon from "@/assets/svg/SpinnerIcon.svg";
-import AuthButton from "../authComponents/AuthButton";
+import AuthButton from "./AuthButton";
 import ReturnButton from "./ReturnButton";
 
 const LoginForm = () => {
@@ -19,9 +19,9 @@ const LoginForm = () => {
         setError,
         watch,
         formState: { errors, isSubmitting },
-    } = useForm({ resolver: zodResolver(LoginSchema) });
+    } = useForm<LoginData>({ resolver: zodResolver(LoginSchema) });
 
-    const rootErrorRef = useRef(null);
+    const rootErrorRef = useRef<HTMLDivElement | null>(null);
 
     const email = watch("email");
     const password = watch("password");
@@ -33,7 +33,7 @@ const LoginForm = () => {
             rootErrorRef.current?.scrollIntoView({ behavior: "smooth" });
         }
     }, [errors.root]);
-    const onSubmit = async (data) => {
+    const onSubmit = async (data: LoginData) => {
         try {
             const res = await signIn("credentials", {
                 email: data.email,
@@ -41,7 +41,7 @@ const LoginForm = () => {
                 redirect: false,
             });
 
-            if (res.error) {
+            if (res?.error) {
                 setError("root", {
                     type: "manual",
                     message: res.error || "Invalid Credentials!",
@@ -50,11 +50,11 @@ const LoginForm = () => {
             }
 
             router.push("/dashboard");
-        } catch (error) {
+        } catch (error: any) {
             setError("root", {
                 type: "manual",
                 message:
-                    res.error ||
+                    error?.message ||
                     "Something went wrong! <br /> Contact the site administrator!",
             });
             return;
@@ -115,7 +115,7 @@ const LoginForm = () => {
                     )}
                 </form>
                 <Link className="mb-9 text-center text-sm" href={"/register"}>
-                    Don't have an account?{" "}
+                    Don&#39;t have an account?{" "}
                     <span className="text-green hover:text-green/90 font-semibold transition-all">
                         Sign up
                     </span>
@@ -125,7 +125,7 @@ const LoginForm = () => {
                         ref={rootErrorRef}
                         className="bg-red rounded-[10px] p-2 text-center text-sm text-white"
                         dangerouslySetInnerHTML={{
-                            __html: errors.root.message,
+                            __html: errors.root?.message || "",
                         }}
                     ></div>
                 )}

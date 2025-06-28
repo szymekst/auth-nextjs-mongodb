@@ -75,4 +75,7 @@ export {
     ChangePasswordSchema,
 };
 
+export type LoginData = z.infer<typeof LoginSchema>;
+export type RegisterData = z.infer<typeof RegisterSchema>;
+export type ForgotPasswordData = z.infer<typeof ForgotPasswordSchema>;
 export type ChangePasswordData = z.infer<typeof ChangePasswordSchema>;
