@@ -3,7 +3,7 @@ import React, { useRef, useEffect } from "react";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ForgotPasswordSchema } from "@/utils/zodSchemas";
+import { ForgotPasswordSchema, ForgotPasswordData } from "@/utils/zodSchemas";
 import AuthButton from "@/components/authComponents/AuthButton";
 import SpinnerIcon from "@/assets/svg/SpinnerIcon.svg";
 import ReturnButton from "@/components/authComponents/ReturnButton";
@@ -16,12 +16,12 @@ const ForgotPasswordForm = () => {
         setError,
         watch,
         formState: { errors, isSubmitting, isSubmitSuccessful },
-    } = useForm({
+    } = useForm<ForgotPasswordData>({
         resolver: zodResolver(ForgotPasswordSchema),
         shouldFocusError: false,
     });
 
-    const rootErrorRef = useRef(null);
+    const rootErrorRef = useRef<HTMLDivElement | null>(null);
 
     const email = watch("email");
 
@@ -33,7 +33,7 @@ const ForgotPasswordForm = () => {
         }
     }, [errors.root]);
 
-    const onSubmit = async (data) => {
+    const onSubmit = async (data: ForgotPasswordData) => {
         try {
             const res = await fetch("/api/auth/request-change-password", {
                 method: "POST",
@@ -52,11 +52,11 @@ const ForgotPasswordForm = () => {
                     message: json.message || "Something went wrong!",
                 });
             }
-        } catch (error) {
+        } catch (error: any) {
             setError("root", {
                 type: "manual",
                 message:
-                    res.error ||
+                    error?.message ||
                     "Failed to connect to API. <br /> Contact the site administrator!",
             });
             return;
@@ -84,8 +84,8 @@ const ForgotPasswordForm = () => {
                             Forgot Password?
                         </h1>
                         <p className="mt-3 text-black/70">
-                            Don't worry! It happens to the best. Please enter
-                            the email address assigned to your account
+                            Don&#39;t worry! It happens to the best. Please
+                            enter the email address assigned to your account
                         </p>
                     </div>
 
@@ -130,7 +130,7 @@ const ForgotPasswordForm = () => {
                             ref={rootErrorRef}
                             className="bg-red rounded-[10px] p-2 text-center text-sm text-white"
                             dangerouslySetInnerHTML={{
-                                __html: errors.root.message,
+                                __html: errors.root?.message || "null",
                             }}
                         ></div>
                     )}
