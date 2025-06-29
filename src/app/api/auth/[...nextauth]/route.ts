@@ -4,6 +4,7 @@ import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
 import { LoginSchema } from "@/utils/zodSchemas";
+import type { SessionStrategy } from "next-auth";
 
 export const authOptions = {
     providers: [
@@ -51,7 +52,7 @@ export const authOptions = {
         }),
     ],
     session: {
-        strategy: "jwt",
+        strategy: "jwt" as SessionStrategy,
     },
     secret: process.env.NEXTAUTH_SECRET,
     pages: {
