@@ -1,5 +1,5 @@
 import { connectMongoDB } from "@/lib/mongodb";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { ForgotPasswordSchema } from "@/utils/zodSchemas";
 import crypto from "crypto";
 
@@ -9,7 +9,7 @@ import ChangePasswordEmail from "@/emails/changePasswordEmail";
 import User from "@/models/User";
 import Token from "@/models/Token";
 
-export async function POST(req) {
+export async function POST(req: NextRequest) {
     try {
         const { email } = await req.json();
 
@@ -45,9 +45,9 @@ export async function POST(req) {
         await sendEmail({
             to: user.email,
             subject: `${process.env.EMAIL_FROM} - Request to change password`,
-            emailToHtml: (
-                <ChangePasswordEmail userName={user.name} token={token} />
-            ),
+            userName: user.name,
+            token: token,
+            template: "changePassword",
         });
 
         return NextResponse.json({
