@@ -1,7 +1,7 @@
 import bcrypt from "bcryptjs";
 import crypto from "crypto";
 import { connectMongoDB } from "@/lib/mongodb";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { RegisterSchema } from "@/utils/zodSchemas";
 
 import { sendEmail } from "@/lib/sendEmail";
@@ -10,7 +10,7 @@ import VerifyAcountEmail from "@/emails/verifyAccountEmail";
 import User from "@/models/User";
 import Token from "@/models/Token";
 
-export async function POST(req) {
+export async function POST(req: NextRequest) {
     try {
         const body = await req.json();
 
@@ -64,7 +64,9 @@ export async function POST(req) {
         await sendEmail({
             to: newUser.email,
             subject: `${process.env.EMAIL_FROM} - Verify your account!`,
-            emailToHtml: <VerifyAcountEmail userName={name} token={token} />,
+            userName: newUser.name,
+            token: token,
+            template: "verifyAccount",
         });
 
         return NextResponse.json(
