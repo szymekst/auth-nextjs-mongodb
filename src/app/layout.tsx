@@ -32,9 +32,3 @@ export default function RootLayout({ children }: RootLayoutProps) {
         </html>
     );
 }
-
-// TODO: W API sprawdź czy użytkownikowi został poprawnie wysłany mail, jeśli nie - usuń utworzony rekord z bazy i wyrzuć błąd.
-
-// TODO: Zrób globalny plik na zmienne ROUTES aby nie zmieniach lokalizacji w kazdym miejscu
-
-// TODO: Dodaj TypeScript
