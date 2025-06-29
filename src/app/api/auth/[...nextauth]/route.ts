@@ -6,6 +6,11 @@ import bcrypt from "bcryptjs";
 import { LoginSchema } from "@/utils/zodSchemas";
 import type { SessionStrategy } from "next-auth";
 
+type Credentials = {
+    email: string;
+    password: string;
+};
+
 export const authOptions = {
     providers: [
         CredentialsProvider({
@@ -13,7 +18,7 @@ export const authOptions = {
             credentials: {},
 
             async authorize(credentials) {
-                const { email, password } = credentials;
+                const { email, password } = credentials as Credentials;
 
                 try {
                     const parsed = LoginSchema.safeParse(credentials);
@@ -46,7 +51,7 @@ export const authOptions = {
                     return user;
                 } catch (error) {
                     console.error("Error: ", error);
-                    throw new Error(error.message);
+                    throw new Error((error as Error).message);
                 }
             },
         }),
